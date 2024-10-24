@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "PRO2EPGSNM_2425Z.sln"
+    "dotnet.defaultSolution": "zadanie_1_2024.sln"
 }
