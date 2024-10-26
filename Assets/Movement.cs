@@ -6,71 +6,75 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Movement : MonoBehaviour
 {
-    Rigidbody rb;
-    SpriteRenderer sr;
-    Animator anim;
+	Rigidbody rb;
+	SpriteRenderer sr;
+	Animator anim;
 
-    public float upForce = 100;
-    public float speed = 1500;
-    public float runSpeed = 2500;
+	public float upForce = 100;
+	public float speed = 1500;
+	public float runSpeed = 2500;
 
-    public bool isGrounded = false;
+	public bool isGrounded = false;
 
-    bool isLeftShift;
-    float moveHorizontal;
-    void Start()
-    {
-        rb = GetComponent<Rigidbody>();
-        sr = GetComponentInChildren<SpriteRenderer>();
-        anim = GetComponentInChildren<Animator>();
-    }
-    void Update()
-    {
-        isLeftShift = Input.GetKey(KeyCode.LeftShift);
-        //Input.GetAxis("Vertical");
-        moveHorizontal = Input.GetAxis("Horizontal");
+	bool isLeftShift;
+	float moveHorizontal;
+	float moveVertical;
 
-        if (moveHorizontal > 0)
-        {
-            sr.flipX = false;
-        }
-        else if(moveHorizontal < 0)
-        {
-            sr.flipX = true;
-        }
+	void Start()
+	{
+		rb = GetComponent<Rigidbody>();
+		sr = GetComponentInChildren<SpriteRenderer>();
+		anim = GetComponentInChildren<Animator>();
+	}
 
-        if (moveHorizontal == 0)
-        {
-            anim.SetBool("isRunning", false);
-        }
-        else
-        {
-            anim.SetBool("isRunning", true);
-        }
+	void Update()
+	{
+		isLeftShift = Input.GetKey(KeyCode.LeftShift);
+		moveHorizontal = Input.GetAxis("Horizontal");
+		moveVertical = Input.GetAxis("Vertical");
 
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
-        {
-            rb.AddForce(Vector3.up * upForce);
-            isGrounded = false;
-        }
+		// Obsługa animacji: dowolny ruch (lewo, prawo, góra, dół) aktywuje isRunning
+		if (moveHorizontal != 0 || moveVertical != 0)
+		{
+			anim.SetBool("isRunning", true);
+		}
+		else
+		{
+			anim.SetBool("isRunning", false);
+		}
 
-    }
+		// Obsługa obrotu postaci w lewo i prawo
+		if (moveHorizontal > 0)
+		{
+			sr.flipX = false;
+		}
+		else if (moveHorizontal < 0)
+		{
+			sr.flipX = true;
+		}
 
-    private void FixedUpdate()
-    {
-        if (isLeftShift)
-        {
-            rb.velocity = new Vector3(moveHorizontal * runSpeed * Time.deltaTime, rb.velocity.y,0);
-        }
-        else 
-        {
-            rb.velocity = new Vector3(moveHorizontal * speed * Time.deltaTime, rb.velocity.y,0);
-        }
-    }
+		// Skakanie
+		if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+		{
+			rb.AddForce(Vector3.up * upForce);
+			isGrounded = false;
+		}
+	}
 
+	private void FixedUpdate()
+	{
+		float currentSpeed = isLeftShift ? runSpeed : speed;
+		
+		// Ustawienie prędkości postaci w zależności od ruchu poziomego i pionowego
+		rb.velocity = new Vector3(
+			moveHorizontal * currentSpeed * Time.deltaTime,
+			rb.velocity.y,
+			moveVertical * currentSpeed * Time.deltaTime
+		);
+	}
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        isGrounded = true;
-    }
+	private void OnCollisionEnter(Collision collision)
+	{
+		isGrounded = true;
+	}
 }
