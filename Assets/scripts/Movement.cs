@@ -33,7 +33,7 @@ public class Movement : MonoBehaviour
 		moveHorizontal = Input.GetAxis("Horizontal");
 		moveVertical = Input.GetAxis("Vertical");
 
-		// Obsługa animacji: dowolny ruch (lewo, prawo, góra, dół) aktywuje isRunning
+		// Obsługa animacji: dowolny ruch (lewo, prawo, góra, dół) 
 		if (moveHorizontal != 0 || moveVertical != 0)
 		{
 			anim.SetBool("isRunning", true);
